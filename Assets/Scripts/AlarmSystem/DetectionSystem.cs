@@ -1,15 +1,20 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider))]
 public class DetectionSystem : MonoBehaviour
 {
-    [SerializeField] private WarningSignal _warningSignal;
+    private bool _thiefInHouse = false;
+
+    public event Action<bool> ThiefDiscovered;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent<Mover>(out _))
         {
-            _warningSignal.EnableSignal();
+            _thiefInHouse = true;
+
+            ThiefDiscovered?.Invoke(_thiefInHouse);
         }
     }
 
@@ -17,7 +22,9 @@ public class DetectionSystem : MonoBehaviour
     {
         if (other.TryGetComponent<Mover>(out _))
         {
-            _warningSignal.DisableSignal();
+            _thiefInHouse = false;
+
+            ThiefDiscovered?.Invoke(_thiefInHouse);
         }
     }
 }
